@@ -14,3 +14,4 @@ class FetchUsers extends UserEvent {
   @override
   List<Object> get props => [page, size];
 }
+class ResetUsers extends UserEvent {}

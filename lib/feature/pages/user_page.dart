@@ -11,32 +11,31 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
-  final TextEditingController _pageController = TextEditingController();
-  final TextEditingController _sizeController = TextEditingController();
+  final TextEditingController _pageController = TextEditingController(text: '0');
+  final TextEditingController _sizeController = TextEditingController(text: '10');
 
   @override
   void initState() {
     super.initState();
-    _pageController.text = '0';
-    _sizeController.text = '10';
     _fetchUsers();
   }
 
   void _fetchUsers() {
+    context.read<UserBloc>().add(ResetUsers());
     final int page = int.tryParse(_pageController.text) ?? 0;
     final int size = int.tryParse(_sizeController.text) ?? 10;
     context.read<UserBloc>().add(FetchUsers(page: page, size: size));
   }
 
   void _nextPage() {
-    final int currentPage = int.tryParse(_pageController.text) ?? 1;
+    final int currentPage = int.tryParse(_pageController.text) ?? 0;
     _pageController.text = (currentPage + 1).toString();
     _fetchUsers();
   }
 
   void _prevPage() {
-    final int currentPage = int.tryParse(_pageController.text) ?? 1;
-    if (currentPage > 1) {
+    final int currentPage = int.tryParse(_pageController.text) ?? 0;
+    if (currentPage > 0) {
       _pageController.text = (currentPage - 1).toString();
       _fetchUsers();
     }
@@ -92,13 +91,10 @@ class _UserPageState extends State<UserPage> {
             Expanded(
               child: BlocBuilder<UserBloc, UserState>(
                 builder: (context, state) {
-
                   if (state is UserLoading) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (state is UserLoaded) {
-                    print("User List count ${state.users.length}");
                     return ListView.builder(
-
                       itemCount: state.users.length,
                       itemBuilder: (context, index) {
                         final user = state.users[index];
